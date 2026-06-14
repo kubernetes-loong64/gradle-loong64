@@ -1,0 +1,39 @@
+ARG JDK_VERSION
+
+FROM kubernetesloong64/jdk-loong64:${JDK_VERSION}-debian
+
+ARG GRADLE_VERSION=9.5.1
+
+ENV GRADLE_VERSION=${GRADLE_VERSION}
+ENV GRADLE_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
+ENV GRADLE_SHA256_URL="${GRADLE_URL}.sha256"
+
+LABEL maintainer="徐晓伟 <xuxiaowei@xuxiaowei.com.cn>" \
+      license="Apache-2.0" \
+      org.opencontainers.image.authors="徐晓伟 <xuxiaowei@xuxiaowei.com.cn>" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.title="LoongArch Gradle" \
+      org.opencontainers.image.description="Gradle ${GRADLE_VERSION} for LoongArch (loong64)" \
+      org.opencontainers.image.version="${GRADLE_VERSION}" \
+      org.opencontainers.image.url="https://github.com/kubernetes-loong64/gradle-loong64" \
+      org.opencontainers.image.source="https://github.com/kubernetes-loong64/gradle-loong64"
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /opt/gradle \
+    && curl -fsSL "${GRADLE_URL}" -o /tmp/gradle.zip \
+    && curl -fsSL "${GRADLE_SHA256_URL}" -o /tmp/gradle.zip.sha256 \
+    && EXPECTED_SHA256=$(cat /tmp/gradle.zip.sha256) \
+    && ACTUAL_SHA256=$(sha256sum /tmp/gradle.zip | awk '{print $1}') \
+    && if [ "$EXPECTED_SHA256" != "$ACTUAL_SHA256" ]; then \
+         echo "SHA256 mismatch: expected $EXPECTED_SHA256, got $ACTUAL_SHA256"; exit 1; \
+       fi \
+    && echo "SHA256 verified: $ACTUAL_SHA256" \
+    && unzip -q /tmp/gradle.zip -d /tmp \
+    && mv /tmp/gradle-${GRADLE_VERSION}/* /opt/gradle/ \
+    && rm -rf /tmp/gradle.zip /tmp/gradle.zip.sha256 /tmp/gradle-${GRADLE_VERSION} \
+    && GRADLE_HOME=/opt/gradle PATH=/opt/gradle/bin:$PATH \
+    gradle --version
+
+ENV GRADLE_HOME=/opt/gradle
+ENV PATH=${GRADLE_HOME}/bin:${PATH}
