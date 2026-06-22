@@ -1,6 +1,6 @@
 ARG JDK_VERSION
-
-FROM kubernetesloong64/jdk-loong64:${JDK_VERSION}-debian
+ARG OS=debian
+FROM kubernetesloong64/jdk-loong64:${JDK_VERSION}-${OS}
 
 ARG GRADLE_VERSION=9.5.1
 

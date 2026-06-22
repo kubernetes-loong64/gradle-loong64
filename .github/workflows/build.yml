@@ -28,6 +28,8 @@ jobs:
             dockerfile: Dockerfile.anolis
           - os: debian
             dockerfile: Dockerfile.debian
+          - os: debian-slim
+            dockerfile: Dockerfile.debian
         jdk:
           - version: "8"
           - version: "11"
@@ -56,33 +58,18 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build image
-        if: github.event_name != 'push'
         run: |
           PREFIX="${{ env.NAMESPACE }}/gradle-loong64"
           TAG="${PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}"
+          is_push=${{ github.event_name == 'push' && '--push' || '--load' }}
           echo "==> Building ${TAG}"
           docker buildx build \
             --no-cache \
             -f "docker/${{ matrix.base.dockerfile }}" \
+            $is_push \
             --build-arg "JDK_VERSION=${{ matrix.jdk.version }}" \
             --build-arg "GRADLE_VERSION=${{ matrix.gradle.version }}" \
-            --platform linux/loong64 \
-            -t "${TAG}" \
-            docker/
-          echo "==> Done: ${TAG}"
-
-      - name: Build and push image
-        if: github.event_name == 'push'
-        run: |
-          PREFIX="${{ env.NAMESPACE }}/gradle-loong64"
-          TAG="${PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}"
-          echo "==> Building and pushing ${TAG}"
-          docker buildx build \
-            --push \
-            --no-cache \
-            -f "docker/${{ matrix.base.dockerfile }}" \
-            --build-arg "JDK_VERSION=${{ matrix.jdk.version }}" \
-            --build-arg "GRADLE_VERSION=${{ matrix.gradle.version }}" \
+            --build-arg "OS=${{ matrix.base.os }}" \
             --platform linux/loong64 \
             -t "${TAG}" \
             docker/
