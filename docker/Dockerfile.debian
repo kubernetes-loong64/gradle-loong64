@@ -19,7 +19,6 @@ LABEL maintainer="徐晓伟 <xuxiaowei@xuxiaowei.com.cn>" \
       org.opencontainers.image.source="https://github.com/kubernetes-loong64/gradle-loong64"
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl unzip ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /opt/gradle \
     && curl -fsSL "${GRADLE_URL}" -o /tmp/gradle.zip \
     && curl -fsSL "${GRADLE_SHA256_URL}" -o /tmp/gradle.zip.sha256 \
@@ -33,7 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl unzip ca-c
     && mv /tmp/gradle-${GRADLE_VERSION}/* /opt/gradle/ \
     && rm -rf /tmp/gradle.zip /tmp/gradle.zip.sha256 /tmp/gradle-${GRADLE_VERSION} \
     && GRADLE_HOME=/opt/gradle PATH=/opt/gradle/bin:$PATH \
-    gradle --version
+    && apt-get purge -y curl unzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && gradle --version
 
 ENV GRADLE_HOME=/opt/gradle
 ENV PATH=${GRADLE_HOME}/bin:${PATH}

@@ -18,7 +18,7 @@ LABEL maintainer="徐晓伟 <xuxiaowei@xuxiaowei.com.cn>" \
       org.opencontainers.image.url="https://github.com/kubernetes-loong64/gradle-loong64" \
       org.opencontainers.image.source="https://github.com/kubernetes-loong64/gradle-loong64"
 
-RUN dnf install -y curl unzip && dnf clean all \
+RUN dnf install -y unzip \
     && mkdir -p /opt/gradle \
     && curl -fsSL "${GRADLE_URL}" -o /tmp/gradle.zip \
     && curl -fsSL "${GRADLE_SHA256_URL}" -o /tmp/gradle.zip.sha256 \
@@ -32,7 +32,10 @@ RUN dnf install -y curl unzip && dnf clean all \
     && mv /tmp/gradle-${GRADLE_VERSION}/* /opt/gradle/ \
     && rm -rf /tmp/gradle.zip /tmp/gradle.zip.sha256 /tmp/gradle-${GRADLE_VERSION} \
     && GRADLE_HOME=/opt/gradle PATH=/opt/gradle/bin:$PATH \
-    gradle --version
+    && dnf remove -y unzip \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf \
+    && gradle --version
 
 ENV GRADLE_HOME=/opt/gradle
 ENV PATH=${GRADLE_HOME}/bin:${PATH}
