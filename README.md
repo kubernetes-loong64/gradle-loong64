@@ -117,7 +117,7 @@ This image is designed to be used as a stage in multi-stage Docker builds. Combi
 ```dockerfile
 ARG JDK_VERSION=26
 
-FROM kubernetesloong64/gradle-loong64:9.6.0-${JDK_VERSION}-debian AS builder
+FROM kubernetesloong64/gradle-loong64:9.6.1-${JDK_VERSION}-debian AS builder
 COPY . /project
 WORKDIR /project
 RUN gradle build --no-daemon
