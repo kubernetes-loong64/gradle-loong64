@@ -2,7 +2,7 @@ ARG JDK_VERSION
 ARG OS=anolis
 FROM kubernetesloong64/jdk-loong64:${JDK_VERSION}-${OS}
 
-ARG GRADLE_VERSION=9.6.0
+ARG GRADLE_VERSION=9.6.1
 
 ENV GRADLE_VERSION=${GRADLE_VERSION}
 ENV GRADLE_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
