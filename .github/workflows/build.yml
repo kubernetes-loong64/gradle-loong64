@@ -38,7 +38,7 @@ jobs:
           - version: "25"
           - version: "26"
         gradle:
-          - version: "9.5.1"
+          - version: "9.6.0"
 
     steps:
       - name: Checkout
