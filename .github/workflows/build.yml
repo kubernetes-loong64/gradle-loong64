@@ -30,6 +30,8 @@ jobs:
             dockerfile: Dockerfile.debian
           - os: debian-slim
             dockerfile: Dockerfile.debian
+          - os: openeuler
+            dockerfile: Dockerfile.openeuler
         jdk:
           - version: "8"
           - version: "11"
@@ -57,10 +59,23 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Login to sync container registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        if: github.event_name == 'push' && vars.SYNC_REGISTRY != ''
+        with:
+          registry: ${{ vars.SYNC_REGISTRY }}
+          username: ${{ vars.SYNC_REGISTRY_USERNAME }}
+          password: ${{ secrets.SYNC_REGISTRY_PASSWORD }}
+
       - name: Build image
         run: |
           PREFIX="${{ env.NAMESPACE }}/gradle-loong64"
           TAG="${PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}"
+          SYNC_PREFIX=${PREFIX}
+          if [ -n "${{ vars.SYNC_REGISTRY }}" ]; then
+            SYNC_PREFIX=${{ vars.SYNC_REGISTRY }}/${PREFIX}
+          fi
+          SYNC_TAG="${SYNC_PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}"
           is_push=${{ github.event_name == 'push' && '--push' || '--load' }}
           echo "==> Building ${TAG}"
           docker buildx build \
@@ -72,5 +87,84 @@ jobs:
             --build-arg "OS=${{ matrix.base.os }}" \
             --platform linux/loong64 \
             -t "${TAG}" \
+            -t "${SYNC_TAG}" \
+            docker/
+          echo "==> Done: ${TAG}"
+
+  build-git:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      NAMESPACE: ${{ vars.NAMESPACE || 'kubernetesloong64' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        git_version: [ "v2.54.0" ]
+        base:
+          - os: anolis
+            dockerfile: Dockerfile.anolis.git
+          - os: debian
+            dockerfile: Dockerfile.debian.git
+          - os: debian-slim
+            dockerfile: Dockerfile.debian.git
+          - os: openeuler
+            dockerfile: Dockerfile.openeuler.git
+        jdk:
+          - version: "8"
+          - version: "11"
+          - version: "17"
+          - version: "21"
+          - version: "25"
+          - version: "26"
+        gradle:
+          - version: "9.6.1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Login to Docker
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Login to sync container registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        if: vars.SYNC_REGISTRY != ''
+        with:
+          registry: ${{ vars.SYNC_REGISTRY }}
+          username: ${{ vars.SYNC_REGISTRY_USERNAME }}
+          password: ${{ secrets.SYNC_REGISTRY_PASSWORD }}
+
+      - name: Build git image
+        run: |
+          PREFIX="${{ env.NAMESPACE }}/gradle-loong64"
+          TAG="${PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}-git"
+          SYNC_PREFIX=${PREFIX}
+          if [ -n "${{ vars.SYNC_REGISTRY }}" ]; then
+            SYNC_PREFIX=${{ vars.SYNC_REGISTRY }}/${PREFIX}
+          fi
+          SYNC_TAG="${SYNC_PREFIX}:${{ matrix.gradle.version }}-${{ matrix.jdk.version }}-${{ matrix.base.os }}-git"
+          echo "==> Building ${TAG}"
+          docker buildx build \
+            --no-cache \
+            --pull \
+            -f "docker/${{ matrix.base.dockerfile }}" \
+            --push \
+            --build-arg "JDK_VERSION=${{ matrix.jdk.version }}" \
+            --build-arg "GRADLE_VERSION=${{ matrix.gradle.version }}" \
+            --build-arg "GIT_VERSION=${{ matrix.git_version }}" \
+            --build-arg "OS=${{ matrix.base.os }}" \
+            --platform linux/loong64 \
+            -t "${TAG}" \
+            -t "${SYNC_TAG}" \
             docker/
           echo "==> Done: ${TAG}"

@@ -1,0 +1,11 @@
+ARG JDK_VERSION
+ARG GIT_VERSION
+ARG GRADLE_VERSION=9.6.1
+ARG OS=debian
+
+FROM kubernetesloong64/git-loong64:${GIT_VERSION}-${OS} AS git-stage
+FROM kubernetesloong64/gradle-loong64:${GRADLE_VERSION}-${JDK_VERSION}-${OS}
+
+COPY --from=git-stage /usr/local /usr/local
+
+RUN git --version

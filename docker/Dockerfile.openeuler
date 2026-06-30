@@ -1,5 +1,5 @@
 ARG JDK_VERSION
-ARG OS=anolis
+ARG OS=openeuler
 FROM kubernetesloong64/jdk-loong64:${JDK_VERSION}-${OS}
 
 ARG GRADLE_VERSION=9.6.1
@@ -18,7 +18,8 @@ LABEL maintainer="徐晓伟 <xuxiaowei@xuxiaowei.com.cn>" \
       org.opencontainers.image.url="https://github.com/kubernetes-loong64/gradle-loong64" \
       org.opencontainers.image.source="https://github.com/kubernetes-loong64/gradle-loong64"
 
-RUN dnf install -y unzip \
+RUN --mount=type=bind,src=unzip-6.0-54.oe2403sp3.loongarch64.rpm,target=/tmp/unzip.rpm \
+    rpm -ivh /tmp/unzip.rpm \
     && mkdir -p /opt/gradle \
     && curl -fsSL "${GRADLE_URL}" -o /tmp/gradle.zip \
     && curl -fsSL "${GRADLE_SHA256_URL}" -o /tmp/gradle.zip.sha256 \
@@ -32,7 +33,7 @@ RUN dnf install -y unzip \
     && mv /tmp/gradle-${GRADLE_VERSION}/* /opt/gradle/ \
     && rm -rf /tmp/gradle.zip /tmp/gradle.zip.sha256 /tmp/gradle-${GRADLE_VERSION} \
     && GRADLE_HOME=/opt/gradle PATH=/opt/gradle/bin:$PATH \
-    && dnf remove -y unzip \
+    && rpm -e unzip \
     && dnf clean all \
     && rm -rf /var/cache/dnf \
     && gradle --version

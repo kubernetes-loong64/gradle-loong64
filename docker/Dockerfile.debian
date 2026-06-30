@@ -38,3 +38,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl unzip ca-c
 
 ENV GRADLE_HOME=/opt/gradle
 ENV PATH=${GRADLE_HOME}/bin:${PATH}
+
+WORKDIR /workspace
