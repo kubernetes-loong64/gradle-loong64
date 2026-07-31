@@ -1,6 +1,5 @@
 name: loong64
 on:
-  workflow_dispatch:
   push:
     branches:
       - loong64-*
@@ -287,61 +286,63 @@ jobs:
             gpg --verify "$file".asc "$file"
           done
 
-      - name: Generate release body header
+      - name: Compute release variables
+        run: |
+          TAG_VERSION=${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}
+          echo "TAG_VERSION=$TAG_VERSION"
+          echo "TAG_VERSION=$TAG_VERSION" >> ${GITHUB_ENV}
+          URL_PREFIX=${{ env.BASE_URL }}/gradle-loong64-${{ TAG_VERSION }}
+          echo "URL_PREFIX=$URL_PREFIX"
+          echo "URL_PREFIX=$URL_PREFIX" >> ${GITHUB_ENV}
+          URL_GIT_PREFIX=${{ env.BASE_URL }}/gradle-loong64-git-${{ TAG_VERSION }}
+          echo "URL_GIT_PREFIX=$URL_GIT_PREFIX"
+          echo "URL_GIT_PREFIX=$URL_GIT_PREFIX" >> ${GITHUB_ENV}
+
+      - name: Generate release body
         run: |
           cat > release-body.md <<'BODYEOF'
           ## Artifacts
 
           | File | Download |
           |------|----------|
-          BODYEOF
-
-      - name: Append artifact table to release body
-        run: |
-          cat >> release-body.md <<'BODYEOF'
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar) |
-          | `gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar` | [gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-8-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-11-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-17-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-21-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-25-debian-slim.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-anolis.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian.tar) |
-          | `gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar` | [gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar](${{ env.BASE_URL }}/gradle-loong64-git-${{ env.DOCKER_TAG }}-${{ env.GRADLE_VERSION }}-26-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-8-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-8-anolis.tar](${{ URL_PREFIX }}-8-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-8-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-8-debian.tar](${{ URL_PREFIX }}-8-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-8-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-8-debian-slim.tar](${{ URL_PREFIX }}-8-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-11-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-11-anolis.tar](${{ URL_PREFIX }}-11-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-11-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-11-debian.tar](${{ URL_PREFIX }}-11-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-11-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-11-debian-slim.tar](${{ URL_PREFIX }}-11-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-17-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-17-anolis.tar](${{ URL_PREFIX }}-17-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-17-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-17-debian.tar](${{ URL_PREFIX }}-17-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-17-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-17-debian-slim.tar](${{ URL_PREFIX }}-17-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-21-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-21-anolis.tar](${{ URL_PREFIX }}-21-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-21-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-21-debian.tar](${{ URL_PREFIX }}-21-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-21-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-21-debian-slim.tar](${{ URL_PREFIX }}-21-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-25-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-25-anolis.tar](${{ URL_PREFIX }}-25-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-25-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-25-debian.tar](${{ URL_PREFIX }}-25-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-25-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-25-debian-slim.tar](${{ URL_PREFIX }}-25-debian-slim.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-26-anolis.tar` | [gradle-loong64-${{ TAG_VERSION }}-26-anolis.tar](${{ URL_PREFIX }}-26-anolis.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-26-debian.tar` | [gradle-loong64-${{ TAG_VERSION }}-26-debian.tar](${{ URL_PREFIX }}-26-debian.tar) |
+          | `gradle-loong64-${{ TAG_VERSION }}-26-debian-slim.tar` | [gradle-loong64-${{ TAG_VERSION }}-26-debian-slim.tar](${{ URL_PREFIX }}-26-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-8-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-8-anolis.tar](${{ URL_GIT_PREFIX }}-8-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-8-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-8-debian.tar](${{ URL_GIT_PREFIX }}-8-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-8-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-8-debian-slim.tar](${{ URL_GIT_PREFIX }}-8-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-11-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-11-anolis.tar](${{ URL_GIT_PREFIX }}-11-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-11-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-11-debian.tar](${{ URL_GIT_PREFIX }}-11-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-11-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-11-debian-slim.tar](${{ URL_GIT_PREFIX }}-11-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-17-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-17-anolis.tar](${{ URL_GIT_PREFIX }}-17-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-17-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-17-debian.tar](${{ URL_GIT_PREFIX }}-17-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-17-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-17-debian-slim.tar](${{ URL_GIT_PREFIX }}-17-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-21-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-21-anolis.tar](${{ URL_GIT_PREFIX }}-21-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-21-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-21-debian.tar](${{ URL_GIT_PREFIX }}-21-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-21-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-21-debian-slim.tar](${{ URL_GIT_PREFIX }}-21-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-25-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-25-anolis.tar](${{ URL_GIT_PREFIX }}-25-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-25-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-25-debian.tar](${{ URL_GIT_PREFIX }}-25-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-25-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-25-debian-slim.tar](${{ URL_GIT_PREFIX }}-25-debian-slim.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-26-anolis.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-26-anolis.tar](${{ URL_GIT_PREFIX }}-26-anolis.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-26-debian.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-26-debian.tar](${{ URL_GIT_PREFIX }}-26-debian.tar) |
+          | `gradle-loong64-git-${{ TAG_VERSION }}-26-debian-slim.tar` | [gradle-loong64-git-${{ TAG_VERSION }}-26-debian-slim.tar](${{ URL_GIT_PREFIX }}-26-debian-slim.tar) |
 
           Each file has a corresponding `.asc` detached GPG signature.
-          BODYEOF
-
-      - name: Append Docker images to release body
-        run: |
-          cat >> release-body.md <<'BODYEOF'
 
           ## Docker images
 
@@ -383,11 +384,6 @@ jobs:
           ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian-git
           ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian-slim-git
           ```
-          BODYEOF
-
-      - name: Append footer to release body
-        run: |
-          cat >> release-body.md <<'BODYEOF'
 
           Download and load an image:
 
