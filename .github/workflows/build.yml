@@ -291,58 +291,42 @@ jobs:
           ## Docker images
 
           ```
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-anolis
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian-slim
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-8-debian-slim-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-11-debian-slim-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-17-debian-slim-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-21-debian-slim-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-25-debian-slim-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-anolis-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian-git
-          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.GRADLE_VERSION }}-26-debian-slim-git
-          ```
-
-          Download and load an image:
-
-          ```shell
-          # Example — replace with the desired file name
-          curl -LO ${{ env.BASE_URL }}/<file>.tar
-          docker load -i <file>.tar
-          ```
-
-          ## Verifying releases
-
-          ```shell
-          gpg --keyserver keys.openpgp.org --recv-keys FCF8724722CCBF9F51B1FBE376532BE7E3013105
-          echo "FCF8724722CCBF9F51B1FBE376532BE7E3013105:6:" | gpg --import-ownertrust
-          gpg --verify <file>.asc <file>
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-anolis
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-debian
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-debian-slim
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-8-debian-slim-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-11-debian-slim-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-17-debian-slim-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-21-debian-slim-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-25-debian-slim-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-anolis-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-debian-git
+          ${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-26-debian-slim-git
           ```
           BODYEOF
 
