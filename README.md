@@ -26,12 +26,12 @@ Prebuilt Gradle Docker images for the LoongArch (loong64) architecture, built on
 
 | JDK | Supported |
 |-----|-----------|
-| 8   | ✅         |
-| 11  | ✅         |
-| 17  | ✅         |
-| 21  | ✅         |
-| 25  | ✅         |
-| 26  | ✅         |
+| 8   | ✅        |
+| 11  | ✅        |
+| 17  | ✅        |
+| 21  | ✅        |
+| 25  | ✅        |
+| 26  | ✅        |
 
 ### Supported Base Images
 
