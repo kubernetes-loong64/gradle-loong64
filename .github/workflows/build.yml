@@ -269,6 +269,17 @@ jobs:
 
             echo "=== Pushing $IMAGE_REF ==="
             docker push "$IMAGE_REF"
+
+            DOCKER_TAG_SUFFIX=$(echo "$suffix" | sed "s/^${{ env.GRADLE_VERSION }}-//")
+            if echo "$filename" | grep -q "^gradle-loong64-git-"; then
+              DOCKER_TAG_IMAGE_REF=${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}-git
+            else
+              DOCKER_TAG_IMAGE_REF=${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}
+            fi
+
+            echo "=== Also pushing $DOCKER_TAG_IMAGE_REF ==="
+            docker tag "$IMAGE_REF" "$DOCKER_TAG_IMAGE_REF"
+            docker push "$DOCKER_TAG_IMAGE_REF"
           done
 
           echo "=== Push complete ==="
@@ -392,5 +403,18 @@ jobs:
             echo "=== Syncing $IMAGE_REF -> $SYNC_IMAGE_REF ==="
             docker tag "$IMAGE_REF" "$SYNC_IMAGE_REF"
             docker push "$SYNC_IMAGE_REF"
+
+            DOCKER_TAG_SUFFIX=$(echo "$suffix" | sed "s/^${{ env.GRADLE_VERSION }}-//")
+            if echo "$filename" | grep -q "^gradle-loong64-git-"; then
+              DOCKER_TAG_IMAGE_REF=${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}-git
+              DOCKER_TAG_SYNC_IMAGE_REF=${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}-git
+            else
+              DOCKER_TAG_IMAGE_REF=${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}
+              DOCKER_TAG_SYNC_IMAGE_REF=${{ vars.SYNC_REGISTRY }}/${{ env.NAMESPACE }}/gradle-loong64:${{ env.DOCKER_TAG }}-${DOCKER_TAG_SUFFIX}
+            fi
+
+            echo "=== Also syncing $DOCKER_TAG_IMAGE_REF -> $DOCKER_TAG_SYNC_IMAGE_REF ==="
+            docker tag "$IMAGE_REF" "$DOCKER_TAG_SYNC_IMAGE_REF"
+            docker push "$DOCKER_TAG_SYNC_IMAGE_REF"
           done
           echo "=== Registry sync complete ==="
